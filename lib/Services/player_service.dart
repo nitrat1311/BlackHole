@@ -22,11 +22,10 @@ import 'dart:io';
 import 'package:audio_service/audio_service.dart';
 import 'package:blackhole/Helpers/mediaitem_converter.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
-import 'package:blackhole/Services/youtube_services.dart';
+
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:logging/logging.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -186,52 +185,7 @@ class PlayerInvoke {
     updateNplay(queue, index);
   }
 
-  static Future<void> refreshYtLink(Map playItem) async {
-    // final bool cacheSong =
-    // Hive.box('settings').get('cacheSong', defaultValue: true) as bool;
-    final int expiredAt = int.parse((playItem['expire_at'] ?? '0').toString());
-    if ((DateTime.now().millisecondsSinceEpoch ~/ 1000) + 350 > expiredAt) {
-      Logger.root.info(
-        'before service | youtube link expired for ${playItem["title"]}',
-      );
-      if (Hive.box('ytlinkcache').containsKey(playItem['id'])) {
-        final Map cache =
-            await Hive.box('ytlinkcache').get(playItem['id']) as Map;
-        final int expiredAt = int.parse((cache['expire_at'] ?? '0').toString());
-        // final String wasCacheEnabled = cache['cached'].toString();
-        if ((DateTime.now().millisecondsSinceEpoch ~/ 1000) + 350 > expiredAt) {
-          Logger.root
-              .info('youtube link expired in cache for ${playItem["title"]}');
-          final newData =
-              await YouTubeServices().refreshLink(playItem['id'].toString());
-          Logger.root.info(
-            'before service | received new link for ${playItem["title"]}',
-          );
-          if (newData != null) {
-            playItem['url'] = newData['url'];
-            playItem['duration'] = newData['duration'];
-            playItem['expire_at'] = newData['expire_at'];
-          }
-        } else {
-          Logger.root
-              .info('youtube link found in cache for ${playItem["title"]}');
-          playItem['url'] = cache['url'];
-          playItem['expire_at'] = cache['expire_at'];
-        }
-      } else {
-        final newData =
-            await YouTubeServices().refreshLink(playItem['id'].toString());
-        Logger.root.info(
-          'before service | received new link for ${playItem["title"]}',
-        );
-        if (newData != null) {
-          playItem['url'] = newData['url'];
-          playItem['duration'] = newData['duration'];
-          playItem['expire_at'] = newData['expire_at'];
-        }
-      }
-    }
-  }
+  
 
   static Future<void> setValues(
     List response,
@@ -240,16 +194,6 @@ class PlayerInvoke {
     // String? playlistBox,
   }) async {
     final List<MediaItem> queue = [];
-    final Map playItem = response[index] as Map;
-    final Map? nextItem =
-        index == response.length - 1 ? null : response[index + 1] as Map;
-    if (playItem['genre'] == 'YouTube') {
-      await refreshYtLink(playItem);
-    }
-    if (nextItem != null && nextItem['genre'] == 'YouTube') {
-      await refreshYtLink(nextItem);
-    }
-
     queue.addAll(
       response.map(
         (song) => MediaItemConverter.mapToMediaItem(

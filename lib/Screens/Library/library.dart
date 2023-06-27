@@ -20,8 +20,6 @@
 import 'dart:io';
 
 import 'package:blackhole/Screens/Library/liked.dart';
-import 'package:blackhole/Screens/LocalMusic/downed_songs.dart';
-import 'package:blackhole/Screens/LocalMusic/downed_songs_desktop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -102,23 +100,7 @@ class _LibraryPageState extends State<LibraryPage> {
             );
           },
         ),
-        LibraryTile(
-          title: AppLocalizations.of(context)!.myMusic,
-          icon: MdiIcons.folderMusic,
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
-                        ? const DownloadedSongsDesktop()
-                        : const DownloadedSongs(
-                            showPlaylists: true,
-                          ),
-              ),
-            );
-          },
-        ),
+
         LibraryTile(
           title: AppLocalizations.of(context)!.downs,
           icon: Icons.download_done_rounded,

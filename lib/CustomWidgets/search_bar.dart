@@ -19,7 +19,7 @@
 
 import 'dart:math';
 
-import 'package:blackhole/Screens/YouTube/youtube_search.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -224,17 +224,7 @@ class _SearchBarState extends State<SearchBar> {
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
-                            Navigator.push(
-                              context,
-                              PageRouteBuilder(
-                                opaque: false,
-                                pageBuilder: (_, __, ___) => YouTubeSearchPage(
-                                  query: query.isNotEmpty
-                                      ? query
-                                      : widget.controller.text,
-                                ),
-                              ),
-                            );
+                           
                           },
                       ),
                     ],

@@ -66,7 +66,6 @@ Future<void> main() async {
   await openHiveBox('stats');
   await openHiveBox('Favorite Songs');
   await openHiveBox('cache', limit: true);
-  await openHiveBox('ytlinkcache', limit: true);
   if (Platform.isAndroid) {
     setOptimalDisplayMode();
   }

@@ -32,7 +32,6 @@ import 'package:blackhole/Helpers/picker.dart';
 import 'package:blackhole/Helpers/update.dart';
 import 'package:blackhole/Screens/Home/saavn.dart' as home_screen;
 import 'package:blackhole/Screens/Settings/player_gradient.dart';
-import 'package:blackhole/Screens/Top Charts/top.dart' as top_screen;
 import 'package:blackhole/Services/ext_storage_provider.dart';
 import 'package:blackhole/main.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -4345,19 +4344,18 @@ class SpotifyCountry {
                     value: countries[idx],
                     groupValue: region,
                     onChanged: (value) {
-                      top_screen.localSongs = [];
+                     
                       region = countries[idx];
-                      top_screen.localFetched = false;
-                      top_screen.localFetchFinished.value = false;
+                      
                       Hive.box('settings').put('region', region);
                       Navigator.pop(context);
                     },
                   ),
                   selected: region == countries[idx],
                   onTap: () {
-                    top_screen.localSongs = [];
+                    
                     region = countries[idx];
-                    top_screen.localFetchFinished.value = false;
+                    
                     Hive.box('settings').put('region', region);
                     Navigator.pop(context);
                   },

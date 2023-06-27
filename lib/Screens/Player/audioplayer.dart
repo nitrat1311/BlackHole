@@ -37,7 +37,7 @@ import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
 import 'package:blackhole/Helpers/config.dart';
 import 'package:blackhole/Helpers/dominant_color.dart';
-import 'package:blackhole/Helpers/lyrics.dart';
+
 import 'package:blackhole/Helpers/mediaitem_converter.dart';
 import 'package:blackhole/Screens/Common/song_list.dart';
 import 'package:blackhole/Screens/Search/albums.dart';
@@ -46,10 +46,6 @@ import 'package:flip_card/flip_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_lyric/lyric_ui/ui_netease.dart';
-import 'package:flutter_lyric/lyrics_model_builder.dart';
-import 'package:flutter_lyric/lyrics_reader_model.dart';
-import 'package:flutter_lyric/lyrics_reader_widget.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:logging/logging.dart';
@@ -1253,79 +1249,13 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
   final ValueNotifier<int> doubletapped = ValueNotifier<int>(0);
   final ValueNotifier<bool> done = ValueNotifier<bool>(false);
   final ValueNotifier<String> lyricsSource = ValueNotifier<String>('');
-  Map lyrics = {
-    'id': '',
-    'lyrics': '',
-    'source': '',
-    'type': '',
-  };
-  final lyricUI = UINetease();
-  LyricsReaderModel? lyricsReaderModel;
+
   bool flipped = false;
 
-  void fetchLyrics() {
-    Logger.root.info('Fetching lyrics');
-    done.value = false;
-    lyricsSource.value = '';
-    if (widget.offline) {
-      Lyrics.getOffLyrics(
-        widget.mediaItem.extras!['url'].toString(),
-      ).then((value) {
-        if (value == '' && widget.getLyricsOnline) {
-          Lyrics.getLyrics(
-            id: widget.mediaItem.id,
-            saavnHas: widget.mediaItem.extras?['has_lyrics'] == 'true',
-            title: widget.mediaItem.title,
-            artist: widget.mediaItem.artist.toString(),
-          ).then((Map value) {
-            lyrics['lyrics'] = value['lyrics'];
-            lyrics['type'] = value['type'];
-            lyrics['source'] = value['source'];
-            lyrics['id'] = widget.mediaItem.id;
-            done.value = true;
-            lyricsSource.value = lyrics['source'].toString();
-            lyricsReaderModel = LyricsModelBuilder.create()
-                .bindLyricToMain(lyrics['lyrics'].toString())
-                .getModel();
-          });
-        } else {
-          Logger.root.info('Lyrics found offline');
-          lyrics['lyrics'] = value;
-          lyrics['type'] = value.startsWith('[00') ? 'lrc' : 'text';
-          lyrics['source'] = 'Local';
-          lyrics['id'] = widget.mediaItem.id;
-          done.value = true;
-          lyricsSource.value = lyrics['source'].toString();
-          lyricsReaderModel = LyricsModelBuilder.create()
-              .bindLyricToMain(lyrics['lyrics'].toString())
-              .getModel();
-        }
-      });
-    } else {
-      Lyrics.getLyrics(
-        id: widget.mediaItem.id,
-        saavnHas: widget.mediaItem.extras?['has_lyrics'] == 'true',
-        title: widget.mediaItem.title,
-        artist: widget.mediaItem.artist.toString(),
-      ).then((Map value) {
-        lyrics['lyrics'] = value['lyrics'];
-        lyrics['type'] = value['type'];
-        lyrics['source'] = value['source'];
-        lyrics['id'] = widget.mediaItem.id;
-        done.value = true;
-        lyricsSource.value = lyrics['source'].toString();
-        lyricsReaderModel = LyricsModelBuilder.create()
-            .bindLyricToMain(lyrics['lyrics'].toString())
-            .getModel();
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    if (flipped && lyrics['id'] != widget.mediaItem.id) {
-      fetchLyrics();
-    }
+
     return SizedBox(
       height: widget.width * 0.85,
       width: widget.width * 0.85,
@@ -1336,9 +1266,7 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
           flipOnTouch: false,
           onFlipDone: (value) {
             flipped = value;
-            if (flipped && lyrics['id'] != widget.mediaItem.id) {
-              fetchLyrics();
-            }
+
           },
           back: GestureDetector(
             onTap: () => widget.cardKey.currentState!.toggleCard(),
@@ -1378,7 +1306,7 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                           Widget? child,
                         ) {
                           return value
-                              ? lyrics['lyrics'] == ''
+                              
                                   ? emptyScreen(
                                       context,
                                       0,
@@ -1391,39 +1319,8 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                                       20.0,
                                       useWhite: true,
                                     )
-                                  : lyrics['type'] == 'text'
-                                      ? SelectableText(
-                                          lyrics['lyrics'].toString(),
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(
-                                            fontSize: 16.0,
-                                          ),
-                                        )
-                                      : StreamBuilder<Duration>(
-                                          stream: AudioService.position,
-                                          builder: (context, snapshot) {
-                                            final position =
-                                                snapshot.data ?? Duration.zero;
-                                            return LyricsReader(
-                                              model: lyricsReaderModel,
-                                              position: position.inMilliseconds,
-                                              lyricUi:
-                                                  UINetease(highlight: false),
-                                              playing: true,
-                                              size: Size(
-                                                widget.width * 0.85,
-                                                widget.width * 0.85,
-                                              ),
-                                              emptyBuilder: () => Center(
-                                                child: Text(
-                                                  'Lyrics Not Found',
-                                                  style: lyricUI
-                                                      .getOtherMainTextStyle(),
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                        )
+                                  
+                                      
                               : child!;
                         },
                       ),
@@ -1469,7 +1366,7 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                         Feedback.forLongPress(context);
                         copyToClipboard(
                           context: context,
-                          text: lyrics['lyrics'].toString(),
+                          text: '',
                         );
                       },
                       icon: const Icon(Icons.copy_rounded),

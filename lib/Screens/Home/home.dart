@@ -1,23 +1,4 @@
-/*
- *  This file is part of BlackHole (https://github.com/Sangwan5688/BlackHole).
- * 
- * BlackHole is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * BlackHole is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
- * 
- * Copyright (c) 2021-2022, Ankit Sangwan
- */
 
-import 'dart:io';
 import 'dart:math';
 
 import 'package:blackhole/CustomWidgets/custom_physics.dart';
@@ -31,12 +12,8 @@ import 'package:blackhole/Helpers/github.dart';
 import 'package:blackhole/Helpers/update.dart';
 import 'package:blackhole/Screens/Home/saavn.dart';
 import 'package:blackhole/Screens/Library/library.dart';
-import 'package:blackhole/Screens/LocalMusic/downed_songs.dart';
-import 'package:blackhole/Screens/LocalMusic/downed_songs_desktop.dart';
 import 'package:blackhole/Screens/Search/search.dart';
 import 'package:blackhole/Screens/Settings/setting.dart';
-import 'package:blackhole/Screens/Top Charts/top.dart';
-import 'package:blackhole/Screens/YouTube/youtube_home.dart';
 import 'package:blackhole/Services/ext_storage_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -328,30 +305,7 @@ class _HomePageState extends State<HomePage> {
                           Navigator.pop(context);
                         },
                       ),
-                      ListTile(
-                        title: Text(AppLocalizations.of(context)!.myMusic),
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 20.0),
-                        leading: Icon(
-                          MdiIcons.folderMusic,
-                          color: Theme.of(context).iconTheme.color,
-                        ),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => (Platform.isWindows ||
-                                      Platform.isLinux ||
-                                      Platform.isMacOS)
-                                  ? const DownloadedSongsDesktop()
-                                  : const DownloadedSongs(
-                                      showPlaylists: true,
-                                    ),
-                            ),
-                          );
-                        },
-                      ),
+                      
                       ListTile(
                         title: Text(AppLocalizations.of(context)!.downs),
                         contentPadding:
@@ -806,11 +760,7 @@ class _HomePageState extends State<HomePage> {
                                   ),
                               ],
                             ),
-                            if (sectionsToShow.contains('Top Charts'))
-                              TopCharts(
-                                pageController: _pageController,
-                              ),
-                            const YouTube(),
+                            
                             const LibraryPage(),
                             if (sectionsToShow.contains('Settings'))
                               SettingPage(callback: callback),

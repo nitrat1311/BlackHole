@@ -20,10 +20,9 @@
 import 'dart:convert';
 
 import 'package:blackhole/APIs/api.dart';
-import 'package:blackhole/APIs/spotify_api.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/Helpers/playlist.dart';
-import 'package:blackhole/Services/youtube_services.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart';
@@ -32,49 +31,7 @@ import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 // ignore: avoid_classes_with_only_static_members
 class SearchAddPlaylist {
-  static Future<Map> addYtPlaylist(String inLink) async {
-    final String link = '$inLink&';
-    try {
-      final RegExpMatch? id = RegExp(r'.*list\=(.*?)&').firstMatch(link);
-      if (id != null) {
-        final Playlist metadata =
-            await YouTubeServices().getPlaylistDetails(id[1]!);
-        final List<Video> tracks =
-            await YouTubeServices().getPlaylistSongs(id[1]!);
-        return {
-          'title': metadata.title,
-          'image': metadata.thumbnails.standardResUrl,
-          'author': metadata.author,
-          'description': metadata.description,
-          'tracks': tracks,
-          'count': tracks.length,
-        };
-      }
-      return {};
-    } catch (e) {
-      Logger.root.severe('Error while adding YT playlist: $e');
-      return {};
-    }
-  }
 
-  static Future<Map> addSpotifyPlaylist(
-    String title,
-    String accessToken,
-    String playlistId,
-  ) async {
-    try {
-      final List tracks =
-          await SpotifyApi().getAllTracksOfPlaylist(accessToken, playlistId);
-      return {
-        'title': title,
-        'count': tracks.length,
-        'tracks': tracks,
-      };
-    } catch (e) {
-      Logger.root.severe('Error while adding Spotify playlist: $e');
-      return {};
-    }
-  }
 
   static Future<Map> addRessoPlaylist(String inLink) async {
     try {

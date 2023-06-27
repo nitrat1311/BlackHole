@@ -28,7 +28,6 @@ import 'package:blackhole/Helpers/mediaitem_converter.dart';
 import 'package:blackhole/Helpers/playlist.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/Services/isolate_service.dart';
-import 'package:blackhole/Services/yt_music.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -226,13 +225,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
                     }
                   }
                 } else {
-                  final res = await YtMusicService()
-                      .getWatchPlaylist(videoId: item.id, limit: 5);
-                  Logger.root.info('Recieved recommendations: $res');
-                  refreshLinks.addAll(res);
-                  if (!jobRunning) {
-                    refreshJob();
-                  }
+     
                 }
               }
             });
@@ -591,7 +584,6 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     songStats['lastPlayed'] = DateTime.now().millisecondsSinceEpoch;
     songStats['playCount'] =
         songStats['playCount'] == null ? 1 : songStats['playCount'] + 1;
-    songStats['isYoutube'] = mediaitem.genre == 'YouTube';
     songStats['title'] = mediaitem.title;
     songStats['artist'] = mediaitem.artist;
     songStats['album'] = mediaitem.album;

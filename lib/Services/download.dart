@@ -22,7 +22,6 @@ import 'dart:io';
 import 'package:audiotagger/audiotagger.dart';
 import 'package:audiotagger/models/tag.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
-import 'package:blackhole/Helpers/lyrics.dart';
 import 'package:blackhole/Services/ext_storage_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -424,16 +423,7 @@ class Download with ChangeNotifier {
         await file2.writeAsBytes(bytes2);
         try {
           Logger.root.info('Checking if lyrics required');
-          if (downloadLyrics) {
-            Logger.root.info('downloading lyrics');
-            final Map res = await Lyrics.getLyrics(
-              id: data['id'].toString(),
-              title: data['title'].toString(),
-              artist: data['artist'].toString(),
-              saavnHas: data['has_lyrics'] == 'true',
-            );
-            lyrics = res['lyrics'].toString();
-          }
+     
         } catch (e) {
           Logger.root.severe('Error fetching lyrics: $e');
           lyrics = '';
